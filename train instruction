@@ -1,0 +1,46 @@
+import requests
+
+pnr_number = input("Please enter your PNR number: ")
+
+
+url = f'https://irctc-indian-railway-pnr-status.p.rapidapi.com/getPNRStatus/{pnr_number}'
+headers = {
+    'x-rapidapi-host': 'irctc-indian-railway-pnr-status.p.rapidapi.com',
+    'x-rapidapi-key': '5866860aa5mshda48ea5e981414fp1ab209jsncdc85a495f81'
+}
+
+
+response = requests.get(url, headers=headers)
+
+
+if response.status_code == 200:
+    data = response.json()
+    if data['success']:
+        
+        pnr_data = data['data']
+        passenger_data = pnr_data['passengerList'][0]  
+        journey_info = {
+            'PNR Number': pnr_data['pnrNumber'],
+            'Train Name': pnr_data['trainName'],
+            'Train Number': pnr_data['trainNumber'],
+            'Source Station': pnr_data['sourceStation'],
+            'Destination Station': pnr_data['destinationStation'],
+            'Boarding Point': pnr_data['boardingPoint'],
+            'Journey Class': pnr_data['journeyClass'],
+            'Booking Status': passenger_data['bookingStatus'],
+            'Berth No': passenger_data['bookingBerthNo'],
+            'Seat No': passenger_data['bookingBerthCode'],
+            'Coach': passenger_data['bookingCoachId'],
+            'Arrival Date': pnr_data['arrivalDate'],
+            'Departure Date': pnr_data['dateOfJourney'],
+            'Distance (km)': pnr_data['distance']
+        }
+
+        
+        print("\nPNR Status Information:")
+        for key, value in journey_info.items():
+            print(f"{key}: {value}")
+    else:
+        print("Failed to fetch PNR details or invalid PNR.")
+else:
+    print(f"Error {response.status_code}: Unable to fetch PNR status.")
